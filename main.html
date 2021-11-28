@@ -1,0 +1,608 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>main module &mdash; Roboticarm  documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="modules" href="modules.html" />
+    <link rel="prev" title="Roboticarm’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="index.html" class="icon icon-home"> Roboticarm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="modules.html">modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">Roboticarm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+      <li>main module</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/main.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="module-main">
+<span id="main-module"></span><h1>main module<a class="headerlink" href="#module-main" title="Permalink to this headline"></a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="main.EF_jog">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">EF_jog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_speed</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#EF_jog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.EF_jog" title="Permalink to this definition"></a></dt>
+<dd><p>EF_jog End-Effector jogging</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p></li>
+<li><p><strong>_direction</strong> (<em>str</em>) – End-Effector jog message</p></li>
+<li><p><strong>_speed</strong> (<em>int</em>) – speed to move with</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="main.RecData">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">RecData</span></span><a class="reference internal" href="_modules/main.html#RecData"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.RecData" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class that contains all key definitions and app commands</p>
+<dl class="field-list simple">
+<dt class="field-odd">Raises</dt>
+<dd class="field-odd"><p><strong>KeyboardInterrupt</strong> – When ESC key is pressed or Ctrl + C</p>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.Cancel">
+<span class="sig-name descname"><span class="pre">Cancel</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['CAN',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.Cancel" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.CreateNewDemo">
+<span class="sig-name descname"><span class="pre">CreateNewDemo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['CRD',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.CreateNewDemo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.DeleteDemo">
+<span class="sig-name descname"><span class="pre">DeleteDemo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['DLD',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.DeleteDemo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.Disconnect">
+<span class="sig-name descname"><span class="pre">Disconnect</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['DSC',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.Disconnect" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.DrawImageDemo">
+<span class="sig-name descname"><span class="pre">DrawImageDemo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['DRW',</span> <span class="pre">117]</span></em><a class="headerlink" href="#main.RecData.DrawImageDemo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.HomePosA">
+<span class="sig-name descname"><span class="pre">HomePosA</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['HHS',</span> <span class="pre">109]</span></em><a class="headerlink" href="#main.RecData.HomePosA" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.HomePosT">
+<span class="sig-name descname"><span class="pre">HomePosT</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['HHH',</span> <span class="pre">104]</span></em><a class="headerlink" href="#main.RecData.HomePosT" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.IncrementChangeNegative">
+<span class="sig-name descname"><span class="pre">IncrementChangeNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['DEC',</span> <span class="pre">45]</span></em><a class="headerlink" href="#main.RecData.IncrementChangeNegative" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.IncrementChangePositive">
+<span class="sig-name descname"><span class="pre">IncrementChangePositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['INC',</span> <span class="pre">61]</span></em><a class="headerlink" href="#main.RecData.IncrementChangePositive" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.NegativeX">
+<span class="sig-name descname"><span class="pre">NegativeX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['EX-',</span> <span class="pre">115]</span></em><a class="headerlink" href="#main.RecData.NegativeX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.NegativeY">
+<span class="sig-name descname"><span class="pre">NegativeY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['EY-',</span> <span class="pre">100]</span></em><a class="headerlink" href="#main.RecData.NegativeY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.NegativeZ">
+<span class="sig-name descname"><span class="pre">NegativeZ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['EZ-',</span> <span class="pre">101]</span></em><a class="headerlink" href="#main.RecData.NegativeZ" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.PickCardDemo">
+<span class="sig-name descname"><span class="pre">PickCardDemo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['PCD',</span> <span class="pre">112]</span></em><a class="headerlink" href="#main.RecData.PickCardDemo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.PositiveX">
+<span class="sig-name descname"><span class="pre">PositiveX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['EX+',</span> <span class="pre">119]</span></em><a class="headerlink" href="#main.RecData.PositiveX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.PositiveY">
+<span class="sig-name descname"><span class="pre">PositiveY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['EY+',</span> <span class="pre">97]</span></em><a class="headerlink" href="#main.RecData.PositiveY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.PositiveZ">
+<span class="sig-name descname"><span class="pre">PositiveZ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['EZ+',</span> <span class="pre">113]</span></em><a class="headerlink" href="#main.RecData.PositiveZ" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.PourDrinkDemo">
+<span class="sig-name descname"><span class="pre">PourDrinkDemo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['DRK',</span> <span class="pre">98]</span></em><a class="headerlink" href="#main.RecData.PourDrinkDemo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.Replay">
+<span class="sig-name descname"><span class="pre">Replay</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['PLD',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.Replay" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.RequestDemos">
+<span class="sig-name descname"><span class="pre">RequestDemos</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['RQD',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.RequestDemos" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.Reset">
+<span class="sig-name descname"><span class="pre">Reset</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['RTP',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.Reset" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.SavePosition">
+<span class="sig-name descname"><span class="pre">SavePosition</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['SVP',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.SavePosition" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.SecondaryGripperNegative">
+<span class="sig-name descname"><span class="pre">SecondaryGripperNegative</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['SG-',</span> <span class="pre">114]</span></em><a class="headerlink" href="#main.RecData.SecondaryGripperNegative" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.SecondaryGripperPositive">
+<span class="sig-name descname"><span class="pre">SecondaryGripperPositive</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['SG+',</span> <span class="pre">103]</span></em><a class="headerlink" href="#main.RecData.SecondaryGripperPositive" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.Undo">
+<span class="sig-name descname"><span class="pre">Undo</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['UNP',</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.RecData.Undo" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.RecData.attributes">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">attributes</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#RecData.attributes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.RecData.attributes" title="Permalink to this definition"></a></dt>
+<dd><p>attributes Return all class attributes that aren’t methods</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>list of all attributes</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor0L">
+<span class="sig-name descname"><span class="pre">jogMotor0L</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M0-',</span> <span class="pre">49]</span></em><a class="headerlink" href="#main.RecData.jogMotor0L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor0R">
+<span class="sig-name descname"><span class="pre">jogMotor0R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M0+',</span> <span class="pre">50]</span></em><a class="headerlink" href="#main.RecData.jogMotor0R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor1L">
+<span class="sig-name descname"><span class="pre">jogMotor1L</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M1-',</span> <span class="pre">51]</span></em><a class="headerlink" href="#main.RecData.jogMotor1L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor1R">
+<span class="sig-name descname"><span class="pre">jogMotor1R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M1+',</span> <span class="pre">52]</span></em><a class="headerlink" href="#main.RecData.jogMotor1R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor2L">
+<span class="sig-name descname"><span class="pre">jogMotor2L</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M2-',</span> <span class="pre">53]</span></em><a class="headerlink" href="#main.RecData.jogMotor2L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor2R">
+<span class="sig-name descname"><span class="pre">jogMotor2R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M2+',</span> <span class="pre">54]</span></em><a class="headerlink" href="#main.RecData.jogMotor2R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor3L">
+<span class="sig-name descname"><span class="pre">jogMotor3L</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M3-',</span> <span class="pre">55]</span></em><a class="headerlink" href="#main.RecData.jogMotor3L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor3R">
+<span class="sig-name descname"><span class="pre">jogMotor3R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M3+',</span> <span class="pre">56]</span></em><a class="headerlink" href="#main.RecData.jogMotor3R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor4L">
+<span class="sig-name descname"><span class="pre">jogMotor4L</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M4-',</span> <span class="pre">57]</span></em><a class="headerlink" href="#main.RecData.jogMotor4L" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.RecData.jogMotor4R">
+<span class="sig-name descname"><span class="pre">jogMotor4R</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">['M4+',</span> <span class="pre">48]</span></em><a class="headerlink" href="#main.RecData.jogMotor4R" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.RecData.key2str">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">key2str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#RecData.key2str"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.RecData.key2str" title="Permalink to this definition"></a></dt>
+<dd><p>key2str Returns the command message for the key pressed</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>int</em>) – ascii code for the key</p>
+</dd>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><p><strong>KeyboardInterrupt</strong> – if ESC key of Ctrl-C is pressed</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>The command message</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="main.RecData.setjogattrs">
+<em class="property"><span class="pre">classmethod</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">setjogattrs</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#RecData.setjogattrs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.RecData.setjogattrs" title="Permalink to this definition"></a></dt>
+<dd><p>setjogattrs Adds the motor jogging attributes and values to the class automatically</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="main.TranslationVector">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">TranslationVector</span></span><a class="reference internal" href="_modules/main.html#TranslationVector"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.TranslationVector" title="Permalink to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Class for all the vectors used for end-effector control</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.NegativeX">
+<span class="sig-name descname"><span class="pre">NegativeX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[-1,</span> <span class="pre">0,</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.TranslationVector.NegativeX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.NegativeY">
+<span class="sig-name descname"><span class="pre">NegativeY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">-1,</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.TranslationVector.NegativeY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.NegativeZ">
+<span class="sig-name descname"><span class="pre">NegativeZ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">-1]</span></em><a class="headerlink" href="#main.TranslationVector.NegativeZ" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.PositiveX">
+<span class="sig-name descname"><span class="pre">PositiveX</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[1,</span> <span class="pre">0,</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.TranslationVector.PositiveX" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.PositiveY">
+<span class="sig-name descname"><span class="pre">PositiveY</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">1,</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.TranslationVector.PositiveY" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.PositiveZ">
+<span class="sig-name descname"><span class="pre">PositiveZ</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">1]</span></em><a class="headerlink" href="#main.TranslationVector.PositiveZ" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="main.TranslationVector.Zero">
+<span class="sig-name descname"><span class="pre">Zero</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">[0,</span> <span class="pre">0,</span> <span class="pre">0]</span></em><a class="headerlink" href="#main.TranslationVector.Zero" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.axis_jog">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">axis_jog</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_direction</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_increment</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#axis_jog"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.axis_jog" title="Permalink to this definition"></a></dt>
+<dd><p>axis_jog jogging but per motor</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – which robot to use</p></li>
+<li><p><strong>_direction</strong> (<em>str</em>) – Single motor jogging command message</p></li>
+<li><p><strong>_increment</strong> (<em>int</em>) – degrees to increment by (before calculation)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.calculate_angles">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">calculate_angles</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_joints</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#calculate_angles"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.calculate_angles" title="Permalink to this definition"></a></dt>
+<dd><p>calculate_angles Calculates the absolute angle joint motors need to reach</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – the robot to use</p></li>
+<li><p><strong>_joints</strong> (<em>list</em>) – list of joint angles</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>list of joint angles after calculation</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>list</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.create_demo">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">create_demo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#create_demo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.create_demo" title="Permalink to this definition"></a></dt>
+<dd><p>create_demo create a new demo based on temporary demo then clear the temp one</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of new demo</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.delete_demo">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">delete_demo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#delete_demo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.delete_demo" title="Permalink to this definition"></a></dt>
+<dd><p>delete_demo delete an already saved demo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>name</strong> (<em>str</em>) – name of demo to delete</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.draw_image">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">draw_image</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#draw_image"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.draw_image" title="Permalink to this definition"></a></dt>
+<dd></dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.home_robot">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">home_robot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_limits</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#home_robot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.home_robot" title="Permalink to this definition"></a></dt>
+<dd><p>home_robot home the robot</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p></li>
+<li><p><strong>_limits</strong> (<em>bool</em>) – whether or not to use limit switches in homing</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.move_sequence">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">move_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#move_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.move_sequence" title="Permalink to this definition"></a></dt>
+<dd><p>move_sequence move per a specific saved sequence</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p></li>
+<li><p><strong>_seq</strong> (<em>dict</em>) – saved sequence to use</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.move_target_sequence">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">move_target_sequence</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_seq</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#move_target_sequence"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.move_target_sequence" title="Permalink to this definition"></a></dt>
+<dd><p>move_target_sequence parse commands as a sequence of moves</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p></li>
+<li><p><strong>_seq</strong> (<em>list</em>) – list of commands</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.play_demo">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">play_demo</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#play_demo"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.play_demo" title="Permalink to this definition"></a></dt>
+<dd><p>play_demo play an already saved demo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p></li>
+<li><p><strong>name</strong> (<em>str</em>) – name of demo to play</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.point2D_2_pose">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">point2D_2_pose</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tangent</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#point2D_2_pose"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.point2D_2_pose" title="Permalink to this definition"></a></dt>
+<dd><p>point2D_2_pose point2D_2_pose Converts a 2D point to a 3D pose in the XY plane (4x4 homogeneous matrix)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>point</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>tangent</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3D Pose matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="robodk.html#robodk.Mat" title="robodk.Mat">Mat</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.reset_pos">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">reset_pos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#reset_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.reset_pos" title="Permalink to this definition"></a></dt>
+<dd><p>reset_pos reset all saved positions in sequence</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.run_program">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">run_program</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_prog_name</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#run_program"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.run_program" title="Permalink to this definition"></a></dt>
+<dd><p>run_program run a RoboDK program instruction by instruction</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p></li>
+<li><p><strong>_prog_name</strong> (<em>str</em>) – name of program</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.save_pos">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">save_pos</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#save_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.save_pos" title="Permalink to this definition"></a></dt>
+<dd><p>save_pos save current position to temporary demo</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>_robot</strong> (<em>RDK.Item</em>) – robot to use</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.svg_draw_quick">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">svg_draw_quick</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svg_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pix_ref</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#svg_draw_quick"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.svg_draw_quick" title="Permalink to this definition"></a></dt>
+<dd><p>svg_draw_quick Quickly shows the image result without checking the robot movements.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>svg_img</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>board</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>pix_ref</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.svg_draw_robot">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">svg_draw_robot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">svg_img</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">board</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pix_ref</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_frame</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">item_tool</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#svg_draw_robot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.svg_draw_robot" title="Permalink to this definition"></a></dt>
+<dd><p>svg_draw_robot Draws the image with the robot. It is slower that svg_draw_quick but it makes sure that the image can be drawn with the robot.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>svg_img</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>board</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>pix_ref</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>item_frame</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>item_tool</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+<li><p><strong>_robot</strong> (<em>[</em><em>type</em><em>]</em>) – [description]</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.undo_pos">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">undo_pos</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#undo_pos"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.undo_pos" title="Permalink to this definition"></a></dt>
+<dd><p>undo_pos undo last saved position in sequence</p>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="main.update_robot">
+<span class="sig-prename descclassname"><span class="pre">main.</span></span><span class="sig-name descname"><span class="pre">update_robot</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">_robot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_initial</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_joints</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">_feedback</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/main.html#update_robot"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#main.update_robot" title="Permalink to this definition"></a></dt>
+<dd><p>update_robot Updates RoboDK simulator and sends angles to hardware so robot can move to it</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>_robot</strong> (<em>RDK.Item</em>) – which robot to use</p></li>
+<li><p><strong>_initial</strong> (<em>str</em>) – Initial message to send</p></li>
+<li><p><strong>_joints</strong> (<em>list</em><em>, </em><em>optional</em>) – list of uncalculated angles. Defaults to [].</p></li>
+<li><p><strong>_feedback</strong> (<em>bool</em><em>, </em><em>optional</em>) – whether or not to block until joint motors are done moving. Defaults to False.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="Roboticarm’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="modules.html" class="btn btn-neutral float-right" title="modules" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Big Hero Robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

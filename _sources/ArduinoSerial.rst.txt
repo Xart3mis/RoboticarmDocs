@@ -1,0 +1,7 @@
+ArduinoSerial module
+====================
+
+.. automodule:: ArduinoSerial
+   :members:
+   :undoc-members:
+   :show-inheritance:

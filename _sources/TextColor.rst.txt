@@ -1,0 +1,7 @@
+TextColor module
+================
+
+.. automodule:: TextColor
+   :members:
+   :undoc-members:
+   :show-inheritance:

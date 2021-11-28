@@ -1,0 +1,37 @@
+svgpy package
+=============
+
+Submodules
+----------
+
+svgpy.parser module
+-------------------
+
+.. automodule:: svgpy.parser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+svgpy.path module
+-----------------
+
+.. automodule:: svgpy.path
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+svgpy.svg module
+----------------
+
+.. automodule:: svgpy.svg
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Module contents
+---------------
+
+.. automodule:: svgpy
+   :members:
+   :undoc-members:
+   :show-inheritance:
