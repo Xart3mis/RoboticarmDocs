@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>main &mdash; Roboticarm  documentation</title>
+      <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js"></script>
+        <script src="../../_static/jquery.js"></script>
+        <script src="../../_static/underscore.js"></script>
+        <script src="../../_static/doctools.js"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex/" />
+    <link rel="search" title="Search" href="../../search/" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+            <a href="../../" class="icon icon-home"> Roboticarm
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search/" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../main/">main module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules/">modules</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../">Roboticarm</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../" class="icon icon-home"></a> &raquo;</li>
+          <li><a href="../">Module code</a> &raquo;</li>
+      <li>main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for main</h1><div class="highlight"><pre>
+<span></span><span class="p">(</span><span class="n">sys</span> <span class="o">:=</span> <span class="nb">__import__</span><span class="p">(</span><span class="s2">&quot;sys&quot;</span><span class="p">))</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="s2">&quot;Server/modules/&quot;</span><span class="p">)</span>
+
+<span class="kn">from</span> <span class="nn">threadedServer</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">ArduinoSerial</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">TextColor</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">keyboard</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="kn">import</span> <span class="nn">traceback</span>
+<span class="kn">import</span> <span class="nn">pickle</span>
+
+<span class="kn">from</span> <span class="nn">svgpy.svg</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">robolink</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">robodk</span> <span class="kn">import</span> <span class="o">*</span>
+
+<span class="n">checkCollisions</span> <span class="o">=</span> <span class="kc">False</span>
+
+<span class="n">JOINTS_COUNT</span> <span class="o">=</span> <span class="mi">5</span>
+<span class="n">VERBOSE</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">INCREMENT</span> <span class="o">=</span> <span class="mi">5</span>
+
+<span class="n">gear_ratios</span> <span class="o">=</span> <span class="p">[</span><span class="mf">3.684</span><span class="p">,</span> <span class="mf">6.636</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">9</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span>
+<span class="n">previous_joints</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">suction_reset</span> <span class="o">=</span> <span class="kc">False</span>
+<span class="n">suction_state</span> <span class="o">=</span> <span class="n">suction_reset</span>
+
+<span class="n">gripper_reset</span> <span class="o">=</span> <span class="mi">20</span>
+<span class="n">gripper_increment</span> <span class="o">=</span> <span class="mi">10</span>
+<span class="n">gripper_state</span> <span class="o">=</span> <span class="n">gripper_reset</span>
+
+<span class="n">demos_file</span> <span class="o">=</span> <span class="s2">&quot;./demos.bin&quot;</span>
+
+<span class="n">demos</span> <span class="o">=</span> <span class="p">[]</span>
+
+<span class="n">STUB</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;name&quot;</span><span class="p">:</span> <span class="s2">&quot;&quot;</span><span class="p">,</span>
+    <span class="s2">&quot;sequence&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;gripper&quot;</span><span class="p">:</span> <span class="p">[],</span>
+    <span class="s2">&quot;suction&quot;</span><span class="p">:</span> <span class="p">[],</span>
+<span class="p">}</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">temp_demo</span> <span class="o">=</span> <span class="n">STUB</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">demos_file</span><span class="p">):</span>
+        <span class="n">demos</span> <span class="o">=</span> <span class="n">pickle</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="nb">open</span><span class="p">(</span><span class="n">demos_file</span><span class="p">,</span> <span class="s2">&quot;rb&quot;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">demos_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span>
+
+    <span class="n">os</span><span class="o">.</span><span class="n">system</span><span class="p">(</span><span class="s2">&quot;cls&quot;</span><span class="p">)</span>
+
+    <span class="n">RDK</span> <span class="o">=</span> <span class="n">Robolink</span><span class="p">(</span>
+        <span class="n">args</span><span class="o">=</span><span class="p">[</span>
+            <span class="s2">&quot;-NOSPLASH&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-TREE_STATE=-1&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-EXIT_LAST_COMM&quot;</span><span class="p">,</span>
+            <span class="s2">&quot;-NEWINSTANCE&quot;</span><span class="p">,</span>
+        <span class="p">]</span>
+        <span class="o">+</span> <span class="p">[</span><span class="s2">&quot;RoboDK/Test machtech.rdk&quot;</span><span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">RDK</span><span class="o">.</span><span class="n">setWindowState</span><span class="p">(</span><span class="n">WINDOWSTATE_CINEMA</span><span class="p">)</span>
+    <span class="n">RDK</span><span class="o">.</span><span class="n">setCollisionActive</span><span class="p">(</span><span class="n">COLLISION_ON</span> <span class="k">if</span> <span class="n">checkCollisions</span> <span class="k">else</span> <span class="n">COLLISION_OFF</span><span class="p">)</span>
+    <span class="n">RDK</span><span class="o">.</span><span class="n">setRunMode</span><span class="p">(</span><span class="n">RUNMODE_SIMULATE</span><span class="p">)</span>
+    <span class="n">RDK</span><span class="o">.</span><span class="n">Render</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+
+    <span class="n">robot</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">ItemUserPick</span><span class="p">(</span><span class="s2">&quot;Select a robot&quot;</span><span class="p">,</span> <span class="n">ITEM_TYPE_ROBOT</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Using robot: </span><span class="si">{</span><span class="n">robot</span><span class="o">.</span><span class="n">Name</span><span class="p">()</span><span class="si">}</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="RecData"><a class="viewcode-back" href="../../main/#main.RecData">[docs]</a><span class="k">class</span> <span class="nc">RecData</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class that contains all key definitions and app commands</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        KeyboardInterrupt: When ESC key is pressed or Ctrl + C</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">PositiveX</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EX+&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;w&quot;</span><span class="p">)]</span>
+    <span class="n">PositiveY</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EY+&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;a&quot;</span><span class="p">)]</span>
+    <span class="n">PositiveZ</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EZ+&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;q&quot;</span><span class="p">)]</span>
+
+    <span class="n">NegativeX</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EX-&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;s&quot;</span><span class="p">)]</span>
+    <span class="n">NegativeY</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EY-&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;d&quot;</span><span class="p">)]</span>
+    <span class="n">NegativeZ</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;EZ-&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;e&quot;</span><span class="p">)]</span>
+
+    <span class="n">HomePosT</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;HHH&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;h&quot;</span><span class="p">)]</span>
+    <span class="n">HomePosA</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;HHS&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">)]</span>
+
+    <span class="n">SecondaryGripperPositive</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SG+&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;g&quot;</span><span class="p">)]</span>
+    <span class="n">SecondaryGripperNegative</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SG-&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;r&quot;</span><span class="p">)]</span>
+
+    <span class="n">IncrementChangePositive</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;INC&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;=&quot;</span><span class="p">)]</span>
+    <span class="n">IncrementChangeNegative</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DEC&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;-&quot;</span><span class="p">)]</span>
+
+    <span class="n">PourDrinkDemo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DRK&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;b&quot;</span><span class="p">)]</span>
+    <span class="n">DrawImageDemo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DRW&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;u&quot;</span><span class="p">)]</span>
+
+    <span class="n">PickCardDemo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PCD&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="s2">&quot;p&quot;</span><span class="p">)]</span>
+    <span class="n">RequestDemos</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RQD&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">CreateNewDemo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CRD&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">SavePosition</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;SVP&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">DeleteDemo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DLD&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Replay</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;PLD&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+    <span class="n">Disconnect</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;DSC&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Cancel</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;CAN&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Reset</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;RTP&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">Undo</span> <span class="o">=</span> <span class="p">[</span><span class="s2">&quot;UNP&quot;</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+
+<div class="viewcode-block" id="RecData.attributes"><a class="viewcode-back" href="../../main/#main.RecData.attributes">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">attributes</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;attributes Return all class attributes that aren&#39;t methods</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            list: list of all attributes</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span>
+            <span class="n">i</span>
+            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">dir</span><span class="p">(</span><span class="bp">cls</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">i</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;__&quot;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="nb">type</span><span class="p">(</span><span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">i</span><span class="p">))</span><span class="o">.</span><span class="vm">__name__</span> <span class="o">!=</span> <span class="s2">&quot;method&quot;</span>
+        <span class="p">]</span></div>
+
+<div class="viewcode-block" id="RecData.setjogattrs"><a class="viewcode-back" href="../../main/#main.RecData.setjogattrs">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">setjogattrs</span><span class="p">(</span><span class="bp">cls</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;setjogattrs Adds the motor jogging attributes and values to the class automatically&quot;&quot;&quot;</span>
+        <span class="n">k</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">JOINTS_COUNT</span><span class="p">):</span>
+            <span class="n">k</span> <span class="o">+=</span> <span class="mi">2</span>
+
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="bp">cls</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;jogMotor</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">L&quot;</span><span class="p">,</span>
+                <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;M</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">-&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span><span class="p">))],</span>
+            <span class="p">)</span>
+            <span class="nb">setattr</span><span class="p">(</span>
+                <span class="bp">cls</span><span class="p">,</span>
+                <span class="sa">f</span><span class="s2">&quot;jogMotor</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">R&quot;</span><span class="p">,</span>
+                <span class="p">[</span><span class="sa">f</span><span class="s2">&quot;M</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s2">+&quot;</span><span class="p">,</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">k</span> <span class="o">+</span> <span class="mi">1</span><span class="p">))</span> <span class="k">if</span> <span class="n">k</span> <span class="o">&lt;=</span> <span class="n">JOINTS_COUNT</span> <span class="o">+</span> <span class="mi">2</span> <span class="k">else</span> <span class="nb">ord</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="mi">0</span><span class="p">))],</span>
+            <span class="p">)</span></div>
+
+<div class="viewcode-block" id="RecData.key2str"><a class="viewcode-back" href="../../main/#main.RecData.key2str">[docs]</a>    <span class="nd">@classmethod</span>
+    <span class="k">def</span> <span class="nf">key2str</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;key2str Returns the command message for the key pressed</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            key (int): ascii code for the key</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            KeyboardInterrupt: if ESC key of Ctrl-C is pressed</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            str: The command message</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">27</span> <span class="ow">or</span> <span class="n">key</span> <span class="o">==</span> <span class="mi">3</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyboardInterrupt</span>
+
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="bp">cls</span><span class="o">.</span><span class="n">attributes</span><span class="p">():</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">attr</span> <span class="o">:=</span> <span class="nb">getattr</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">i</span><span class="p">))[</span><span class="mi">1</span><span class="p">]</span> <span class="o">==</span> <span class="n">key</span><span class="p">:</span>
+                <span class="k">return</span> <span class="n">attr</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="s2">&quot;Unidentified&quot;</span></div></div>
+
+
+<span class="n">RecData</span><span class="o">.</span><span class="n">setjogattrs</span><span class="p">()</span>  <span class="c1"># Call to set motor jogging attrs</span>
+
+
+<div class="viewcode-block" id="TranslationVector"><a class="viewcode-back" href="../../main/#main.TranslationVector">[docs]</a><span class="k">class</span> <span class="nc">TranslationVector</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;Class for all the vectors used for end-effector control&quot;&quot;&quot;</span>
+
+    <span class="n">PositiveX</span> <span class="o">=</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">PositiveY</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">PositiveZ</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">NegativeX</span> <span class="o">=</span> <span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">NegativeY</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span>
+    <span class="n">NegativeZ</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+
+    <span class="n">Zero</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="calculate_angles"><a class="viewcode-back" href="../../main/#main.calculate_angles">[docs]</a><span class="k">def</span> <span class="nf">calculate_angles</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_joints</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;calculate_angles Calculates the absolute angle joint motors need to reach</span>
+
+<span class="sd">    .. math::</span>
+<span class="sd">        (jointangle_1 - (jointlimit_1)_l) * gear ratio_1</span>
+
+<span class="sd">        (jointangle_2 - (jointlimit_2)_l) * gear ratio_2</span>
+
+<span class="sd">        (jointangle_3 - (jointlimit_3)_l) * gear ratio_3</span>
+
+<span class="sd">        (jointangle_4 - (jointlimit_4)_l) * gear ratio_4</span>
+
+<span class="sd">        (jointangle_5 - (jointlimit_5)_l) * gear ratio_5</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): the robot to use</span>
+<span class="sd">        _joints (list): list of joint angles</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        list: list of joint angles after calculation</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">_joint_copy</span> <span class="o">=</span> <span class="n">_joints</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+    <span class="n">_joint_copy</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="p">[</span>
+        <span class="nb">round</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">_joint</span> <span class="o">-</span> <span class="n">_robot</span><span class="o">.</span><span class="n">JointLimits</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="n">motorIndex</span><span class="p">])</span>
+            <span class="o">*</span> <span class="n">gear_ratios</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">motorIndex</span><span class="p">,</span> <span class="n">_joint</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">_joint_copy</span><span class="p">)</span>
+    <span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="update_robot"><a class="viewcode-back" href="../../main/#main.update_robot">[docs]</a><span class="k">def</span> <span class="nf">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_initial</span><span class="p">,</span> <span class="n">_joints</span><span class="o">=</span><span class="p">[],</span> <span class="n">_feedback</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;update_robot Updates RoboDK simulator and sends angles to hardware so robot can move to it</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): which robot to use</span>
+<span class="sd">        _initial (str): Initial message to send</span>
+<span class="sd">        _joints (list, optional): list of uncalculated angles. Defaults to [].</span>
+<span class="sd">        _feedback (bool, optional): whether or not to block until joint motors are done moving. Defaults to False.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">previous_joints</span>
+
+    <span class="n">calculate</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">_joints</span><span class="p">)</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">()):</span>
+        <span class="n">calculate</span> <span class="o">=</span> <span class="kc">True</span>
+        <span class="k">if</span> <span class="n">_joints</span> <span class="o">!=</span> <span class="n">previous_joints</span><span class="p">:</span>
+
+            <span class="n">previous_joints</span> <span class="o">=</span> <span class="n">_joints</span>
+
+            <span class="n">_robot</span><span class="o">.</span><span class="n">MoveJ</span><span class="p">(</span><span class="n">_joints</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;angles: </span><span class="si">{</span><span class="p">[</span><span class="nb">round</span><span class="p">(</span><span class="n">_joint</span><span class="p">)</span> <span class="k">for</span> <span class="n">_joint</span> <span class="ow">in</span> <span class="n">_joints</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="n">SERIAL</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">calculate</span><span class="p">:</span>
+            <span class="n">_joints</span> <span class="o">=</span> <span class="n">calculate_angles</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_joints</span><span class="p">)</span>
+        <span class="n">SendBlock</span><span class="p">(</span><span class="n">_initial</span><span class="p">,</span> <span class="n">_joints</span><span class="p">,</span> <span class="n">VERBOSE</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">_feedback</span><span class="p">:</span>
+            <span class="n">FlushSerial</span><span class="p">()</span>
+            <span class="k">while</span> <span class="n">ReadMessage</span><span class="p">(</span><span class="n">VERBOSE</span><span class="p">)</span> <span class="o">!=</span> <span class="s2">&quot;done&quot;</span><span class="p">:</span>
+                <span class="n">FlushSerial</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="EF_jog"><a class="viewcode-back" href="../../main/#main.EF_jog">[docs]</a><span class="k">def</span> <span class="nf">EF_jog</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_direction</span><span class="p">,</span> <span class="n">_speed</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;EF_jog End-Effector jogging</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">        _direction (str): End-Effector jog message</span>
+<span class="sd">        _speed (int): speed to move with</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">Zero</span>
+
+    <span class="k">if</span> <span class="n">_direction</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">NegativeY</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">NegativeY</span>
+    <span class="k">elif</span> <span class="n">_direction</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">PositiveY</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">PositiveY</span>
+    <span class="k">elif</span> <span class="n">_direction</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">NegativeX</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">NegativeX</span>
+    <span class="k">elif</span> <span class="n">_direction</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">PositiveX</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">PositiveX</span>
+    <span class="k">elif</span> <span class="n">_direction</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">NegativeZ</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">NegativeZ</span>
+    <span class="k">elif</span> <span class="n">_direction</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">PositiveZ</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+        <span class="n">move_direction</span> <span class="o">=</span> <span class="n">TranslationVector</span><span class="o">.</span><span class="n">PositiveZ</span>
+
+    <span class="n">xyz_move</span> <span class="o">=</span> <span class="n">mult3</span><span class="p">(</span><span class="n">move_direction</span><span class="p">,</span> <span class="n">_speed</span><span class="p">)</span>
+    <span class="n">robot_joints</span> <span class="o">=</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span>
+    <span class="n">robot_position</span> <span class="o">=</span> <span class="n">_robot</span><span class="o">.</span><span class="n">SolveFK</span><span class="p">(</span><span class="n">robot_joints</span><span class="p">)</span>
+    <span class="n">new_robot_position</span> <span class="o">=</span> <span class="n">transl</span><span class="p">(</span><span class="n">xyz_move</span><span class="p">)</span> <span class="o">*</span> <span class="n">robot_position</span>
+    <span class="n">new_robot_joints</span> <span class="o">=</span> <span class="n">_robot</span><span class="o">.</span><span class="n">SolveIK</span><span class="p">(</span><span class="n">new_robot_position</span><span class="p">)</span>
+    <span class="n">new_robot_joints</span> <span class="o">=</span> <span class="n">new_robot_joints</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">new_robot_joints</span><span class="p">)</span> <span class="o">&lt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">robot_joints</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;No robot solution!! The new position is too far, out of reach or close to a singularity</span><span class="se">\n</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;End effector </span><span class="si">{</span><span class="n">_direction</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">new_robot_joints</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="axis_jog"><a class="viewcode-back" href="../../main/#main.axis_jog">[docs]</a><span class="k">def</span> <span class="nf">axis_jog</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_direction</span><span class="p">,</span> <span class="n">_increment</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;axis_jog jogging but per motor</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): which robot to use</span>
+<span class="sd">        _direction (str): Single motor jogging command message</span>
+<span class="sd">        _increment (int): degrees to increment by (before calculation)</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">robot_joints</span> <span class="o">=</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">()</span>
+
+    <span class="n">motorIndex</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">_direction</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="n">_direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;+&quot;</span><span class="p">:</span>
+        <span class="n">robot_joints</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span> <span class="o">+=</span> <span class="n">_increment</span>
+    <span class="k">elif</span> <span class="n">_direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">==</span> <span class="s2">&quot;-&quot;</span><span class="p">:</span>
+        <span class="n">robot_joints</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span> <span class="o">-=</span> <span class="n">_increment</span>
+
+    <span class="k">if</span> <span class="n">robot_joints</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">_robot</span><span class="o">.</span><span class="n">JointLimits</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="n">motorIndex</span><span class="p">]:</span>
+        <span class="n">robot_joints</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">_robot</span><span class="o">.</span><span class="n">JointLimits</span><span class="p">()[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="n">motorIndex</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;axis</span><span class="si">{</span><span class="n">motorIndex</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> at limit</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">robot_joints</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">_robot</span><span class="o">.</span><span class="n">JointLimits</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="n">motorIndex</span><span class="p">]:</span>
+        <span class="n">robot_joints</span><span class="p">[</span><span class="n">motorIndex</span><span class="p">]</span> <span class="o">=</span> <span class="n">_robot</span><span class="o">.</span><span class="n">JointLimits</span><span class="p">()[</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">list</span><span class="p">()[</span><span class="n">motorIndex</span><span class="p">]</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;axis</span><span class="si">{</span><span class="n">motorIndex</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> at limit</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">else</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;axis</span><span class="si">{</span><span class="n">motorIndex</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="n">_direction</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="si">}{</span><span class="n">_increment</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">robot_joints</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="home_robot"><a class="viewcode-back" href="../../main/#main.home_robot">[docs]</a><span class="k">def</span> <span class="nf">home_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_limits</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;home_robot home the robot</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">        _limits (bool): whether or not to use limit switches in homing</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">gripper_state</span>
+
+    <span class="n">_joints</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">()))]</span>
+
+    <span class="k">if</span> <span class="n">_limits</span><span class="p">:</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;H&quot;</span><span class="p">,</span> <span class="n">_joints</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_joints</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">update_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">gripper_reset</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+    <span class="n">gripper_state</span> <span class="o">=</span> <span class="n">gripper_reset</span></div>
+
+
+<div class="viewcode-block" id="move_target_sequence"><a class="viewcode-back" href="../../main/#main.move_target_sequence">[docs]</a><span class="k">def</span> <span class="nf">move_target_sequence</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_seq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;move_target_sequence parse commands as a sequence of moves</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">        _seq (list): list of commands</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Moving sequence...&quot;</span><span class="p">)</span>
+
+    <span class="n">commands</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;d&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">time</span><span class="o">.</span><span class="n">sleep</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="k">if</span> <span class="n">x</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span><span class="p">),</span>
+        <span class="s2">&quot;s&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">y</span><span class="p">:</span> <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="nb">int</span><span class="p">(</span><span class="n">y</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span> <span class="k">else</span> <span class="mi">0</span><span class="p">]),</span>
+        <span class="s2">&quot;g&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">z</span><span class="p">:</span> <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">z</span><span class="p">)</span> <span class="k">if</span> <span class="n">z</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">()</span> <span class="k">else</span> <span class="mi">0</span><span class="p">]),</span>
+        <span class="s2">&quot;v&quot;</span><span class="p">:</span> <span class="k">lambda</span> <span class="n">v</span><span class="p">:</span> <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;V&quot;</span><span class="p">,</span> <span class="n">v</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;,&quot;</span><span class="p">)),</span>
+    <span class="p">}</span>
+
+    <span class="n">home_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">_seq</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="p">([</span><span class="n">i</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">commands</span><span class="p">]):</span>
+            <span class="n">commands</span><span class="p">[</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]](</span><span class="n">target</span><span class="p">[</span><span class="mi">1</span><span class="p">:])</span>
+
+        <span class="k">elif</span> <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">.</span><span class="n">isnumeric</span><span class="p">():</span>
+            <span class="n">target_num</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">target</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+            <span class="n">move_type</span> <span class="o">=</span> <span class="n">target</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">point</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Target </span><span class="si">{</span><span class="n">target_num</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">ITEM_TYPE_TARGET</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">move_type</span> <span class="o">==</span> <span class="s2">&quot;j&quot;</span><span class="p">:</span>
+                <span class="n">_robot</span><span class="o">.</span><span class="n">MoveJ</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+            <span class="k">elif</span> <span class="n">move_type</span> <span class="o">==</span> <span class="s2">&quot;l&quot;</span><span class="p">:</span>
+                <span class="n">_robot</span><span class="o">.</span><span class="n">MoveL</span><span class="p">(</span><span class="n">point</span><span class="p">)</span>
+
+            <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+
+    <span class="n">home_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Finished sequence...&quot;</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="run_program"><a class="viewcode-back" href="../../main/#main.run_program">[docs]</a><span class="k">def</span> <span class="nf">run_program</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_prog_name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;run_program run a RoboDK program instruction by instruction</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">        _prog_name (str): name of program</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">prog</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="n">_prog_name</span><span class="p">,</span> <span class="n">ITEM_TYPE_PROGRAM</span><span class="p">)</span>
+
+    <span class="n">ins_count</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">InstructionCount</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ins_count</span><span class="p">):</span>
+        <span class="n">ins_nom</span><span class="p">,</span> <span class="n">ins_type</span><span class="p">,</span> <span class="n">move_type</span><span class="p">,</span> <span class="n">isjointtarget</span><span class="p">,</span> <span class="n">pose</span><span class="p">,</span> <span class="n">joints</span> <span class="o">=</span> <span class="n">prog</span><span class="o">.</span><span class="n">Instruction</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">ins_type</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">ins_type</span> <span class="o">==</span> <span class="n">INS_TYPE_MOVE</span><span class="p">:</span>
+            <span class="n">prog</span><span class="o">.</span><span class="n">InstructionSelect</span><span class="p">(</span><span class="n">ins_count</span><span class="p">)</span>
+            <span class="c1"># Add a new program call</span>
+            <span class="n">prog</span><span class="o">.</span><span class="n">RunInstruction</span><span class="p">(</span><span class="s2">&quot;&quot;</span><span class="p">,</span> <span class="n">INSTRUCTION_CALL_PROGRAM</span><span class="p">)</span>
+            <span class="n">_robot</span><span class="o">.</span><span class="n">MoveJ</span><span class="p">(</span><span class="n">pose</span><span class="p">)</span>
+            <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="move_sequence"><a class="viewcode-back" href="../../main/#main.move_sequence">[docs]</a><span class="k">def</span> <span class="nf">move_sequence</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">_seq</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;move_sequence move per a specific saved sequence</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">        _seq (dict): saved sequence to use</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">home_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">_seq</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">])):</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_seq</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">_seq</span><span class="p">[</span><span class="s2">&quot;gripper&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]],</span> <span class="kc">True</span><span class="p">)</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;S&quot;</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span> <span class="k">if</span> <span class="n">_seq</span><span class="p">[</span><span class="s2">&quot;suction&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">]</span> <span class="k">else</span> <span class="mi">0</span><span class="p">])</span>
+
+    <span class="n">home_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="save_pos"><a class="viewcode-back" href="../../main/#main.save_pos">[docs]</a><span class="k">def</span> <span class="nf">save_pos</span><span class="p">(</span><span class="n">_robot</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;save_pos save current position to temporary demo</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">temp_demo</span>
+
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">())</span>
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;suction&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">suction_state</span><span class="p">)</span>
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;gripper&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">gripper_state</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="undo_pos"><a class="viewcode-back" href="../../main/#main.undo_pos">[docs]</a><span class="k">def</span> <span class="nf">undo_pos</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;undo_pos undo last saved position in sequence&quot;&quot;&quot;</span>
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;sequence&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;gripper&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;suction&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="reset_pos"><a class="viewcode-back" href="../../main/#main.reset_pos">[docs]</a><span class="k">def</span> <span class="nf">reset_pos</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;reset_pos reset all saved positions in sequence&quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">temp_demo</span>
+    <span class="n">temp_demo</span> <span class="o">=</span> <span class="n">STUB</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span></div>
+
+
+<div class="viewcode-block" id="create_demo"><a class="viewcode-back" href="../../main/#main.create_demo">[docs]</a><span class="k">def</span> <span class="nf">create_demo</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;create_demo create a new demo based on temporary demo then clear the temp one</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): name of new demo</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">global</span> <span class="n">temp_demo</span>
+
+    <span class="n">temp_demo</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">name</span>
+    <span class="n">demos</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">temp_demo</span><span class="p">)</span>
+
+    <span class="n">temp_demo</span> <span class="o">=</span> <span class="n">STUB</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">demos_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="delete_demo"><a class="viewcode-back" href="../../main/#main.delete_demo">[docs]</a><span class="k">def</span> <span class="nf">delete_demo</span><span class="p">(</span><span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;delete_demo delete an already saved demo</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        name (str): name of demo to delete</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">demos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">demo</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">demos</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="k">break</span>
+
+    <span class="n">pickle</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">demos</span><span class="p">,</span> <span class="nb">open</span><span class="p">(</span><span class="n">demos_file</span><span class="p">,</span> <span class="s2">&quot;wb&quot;</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="play_demo"><a class="viewcode-back" href="../../main/#main.play_demo">[docs]</a><span class="k">def</span> <span class="nf">play_demo</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">name</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;play_demo play an already saved demo</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        _robot (Item): robot to use</span>
+<span class="sd">        name (str): name of demo to play</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">demo</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">demos</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">demo</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span> <span class="o">==</span> <span class="n">name</span><span class="p">:</span>
+            <span class="n">move_sequence</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="n">demos</span><span class="p">[</span><span class="n">i</span><span class="p">])</span>
+            <span class="k">break</span></div>
+
+
+<div class="viewcode-block" id="point2D_2_pose"><a class="viewcode-back" href="../../main/#main.point2D_2_pose">[docs]</a><span class="k">def</span> <span class="nf">point2D_2_pose</span><span class="p">(</span><span class="n">point</span><span class="p">,</span> <span class="n">tangent</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;point2D_2_pose Converts a 2D point to a 3D pose in the XY plane (4x4 homogeneous matrix)</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        point (Point): point on path</span>
+<span class="sd">        tangent (Point): vector path tangent</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Mat: 3D Pose matrix</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">return</span> <span class="n">transl</span><span class="p">(</span><span class="n">point</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">point</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">rotz</span><span class="p">(</span><span class="n">tangent</span><span class="o">.</span><span class="n">angle</span><span class="p">())</span></div>
+
+
+<div class="viewcode-block" id="svg_draw_quick"><a class="viewcode-back" href="../../main/#main.svg_draw_quick">[docs]</a><span class="k">def</span> <span class="nf">svg_draw_quick</span><span class="p">(</span><span class="n">svg_img</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">pix_ref</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;svg_draw_quick Quickly shows the image result without checking the robot movements.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        svg_img (Svg): The image to draw</span>
+<span class="sd">        board (Item): robodk item to draw on</span>
+<span class="sd">        pix_ref (Item): pixel reference to set the path color, set pixel width and copy</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">RDK</span><span class="o">.</span><span class="n">Render</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">svg_img</span><span class="p">:</span>
+        <span class="n">count</span> <span class="o">=</span> <span class="n">count</span> <span class="o">+</span> <span class="mi">1</span>
+        <span class="c1"># use the pixel reference to set the path color, set pixel width and copy as a reference</span>
+        <span class="n">pix_ref</span><span class="o">.</span><span class="n">Recolor</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">)</span>
+        <span class="n">np</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">nPoints</span><span class="p">()</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;drawing path </span><span class="si">%i</span><span class="s2">/</span><span class="si">%i</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="p">(</span><span class="n">count</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">svg_img</span><span class="p">)))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="p">):</span>
+            <span class="n">p_i</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">getPoint</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">v_i</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">getVector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">pt_pose</span> <span class="o">=</span> <span class="n">point2D_2_pose</span><span class="p">(</span><span class="n">p_i</span><span class="p">,</span> <span class="n">v_i</span><span class="p">)</span>
+
+            <span class="c1"># add the pixel geometry to the drawing board object, at the calculated pixel pose</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">pix_ref</span><span class="p">,</span> <span class="n">pt_pose</span><span class="p">)</span>
+
+    <span class="n">RDK</span><span class="o">.</span><span class="n">Render</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="svg_draw_robot"><a class="viewcode-back" href="../../main/#main.svg_draw_robot">[docs]</a><span class="k">def</span> <span class="nf">svg_draw_robot</span><span class="p">(</span><span class="n">svg_img</span><span class="p">,</span> <span class="n">board</span><span class="p">,</span> <span class="n">pix_ref</span><span class="p">,</span> <span class="n">item_frame</span><span class="p">,</span> <span class="n">item_tool</span><span class="p">,</span> <span class="n">_robot</span><span class="p">):</span>
+    <span class="c1"># TODO Douva pls fill this in</span>
+    <span class="sd">&quot;&quot;&quot;svg_draw_robot Draws the image with the robot. It is slower that svg_draw_quick but it makes sure that the image can be drawn with the robot.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        svg_img (Svg): The image to draw</span>
+<span class="sd">        board (Item): robodk item to draw on</span>
+<span class="sd">        pix_ref (Item): pixel reference to set the path color, set pixel width and copy</span>
+<span class="sd">        item_frame (Item): robot pose frame</span>
+<span class="sd">        item_tool (Item): robot pose tool to use</span>
+<span class="sd">        _robot (Item): robot to use</span>
+
+<span class="sd">    .. seealso:: :func:`~main.svg_draw_quick`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">APPROACH</span> <span class="o">=</span> <span class="mi">100</span>  <span class="c1"># approach distance in MM for each path</span>
+    <span class="n">home_joints</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="o">-</span><span class="mf">0.000000</span><span class="p">,</span>
+        <span class="mf">9.402473</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">13.578822</span><span class="p">,</span>
+        <span class="mf">0.000000</span><span class="p">,</span>
+        <span class="o">-</span><span class="mf">67.018704</span><span class="p">,</span>
+        <span class="mf">0.000000</span><span class="p">,</span>
+    <span class="p">]</span>  <span class="c1"># home joints, in deg</span>
+
+    <span class="n">_robot</span><span class="o">.</span><span class="n">setPoseFrame</span><span class="p">(</span><span class="n">item_frame</span><span class="p">)</span>
+    <span class="n">_robot</span><span class="o">.</span><span class="n">setPoseTool</span><span class="p">(</span><span class="n">item_tool</span><span class="p">)</span>
+    <span class="n">_robot</span><span class="o">.</span><span class="n">MoveJ</span><span class="p">(</span><span class="n">home_joints</span><span class="p">)</span>
+    <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="c1"># get the target orientation depending on the tool orientation at home position</span>
+    <span class="n">orient_frame2tool</span> <span class="o">=</span> <span class="p">(</span>
+        <span class="n">invH</span><span class="p">(</span><span class="n">item_frame</span><span class="o">.</span><span class="n">Pose</span><span class="p">())</span> <span class="o">*</span> <span class="n">_robot</span><span class="o">.</span><span class="n">SolveFK</span><span class="p">(</span><span class="n">home_joints</span><span class="p">)</span> <span class="o">*</span> <span class="n">item_tool</span><span class="o">.</span><span class="n">Pose</span><span class="p">()</span>
+    <span class="p">)</span>
+    <span class="n">orient_frame2tool</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">]</span> <span class="o">=</span> <span class="n">Mat</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">])</span>
+    <span class="c1"># alternative: orient_frame2tool = roty(pi)</span>
+
+    <span class="k">for</span> <span class="n">path</span> <span class="ow">in</span> <span class="n">svg_img</span><span class="p">:</span>
+        <span class="c1"># use the pixel reference to set the path color, set pixel width and copy as a reference</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s2">&quot;Drawing </span><span class="si">%s</span><span class="s2">, RGB color = [</span><span class="si">%.3f</span><span class="s2">,</span><span class="si">%.3f</span><span class="s2">,</span><span class="si">%.3f</span><span class="s2">]&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">idname</span><span class="p">,</span> <span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="n">pix_ref</span><span class="o">.</span><span class="n">Recolor</span><span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">)</span>
+        <span class="n">np</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">nPoints</span><span class="p">()</span>
+
+        <span class="c1"># robot movement: approach to the first target</span>
+        <span class="n">p_0</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">getPoint</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">target0</span> <span class="o">=</span> <span class="n">transl</span><span class="p">(</span><span class="n">p_0</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p_0</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">orient_frame2tool</span>
+        <span class="n">target0_app</span> <span class="o">=</span> <span class="n">target0</span> <span class="o">*</span> <span class="n">transl</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">APPROACH</span><span class="p">)</span>
+        <span class="c1"># print(f&quot;ROBOT ANGLES ------&gt;&gt;&gt;&gt;&gt;&gt;{target0_app}&quot;)</span>
+        <span class="n">_robot</span><span class="o">.</span><span class="n">MoveL</span><span class="p">(</span><span class="n">target0_app</span><span class="p">)</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">RDK</span><span class="o">.</span><span class="n">RunMessage</span><span class="p">(</span><span class="s2">&quot;Drawing </span><span class="si">%s</span><span class="s2">&quot;</span> <span class="o">%</span> <span class="n">path</span><span class="o">.</span><span class="n">idname</span><span class="p">)</span>
+        <span class="n">RDK</span><span class="o">.</span><span class="n">RunProgram</span><span class="p">(</span>
+            <span class="s2">&quot;SetColorRGB(</span><span class="si">%.3f</span><span class="s2">,</span><span class="si">%.3f</span><span class="s2">,</span><span class="si">%.3f</span><span class="s2">)&quot;</span>
+            <span class="o">%</span> <span class="p">(</span><span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">path</span><span class="o">.</span><span class="n">fill_color</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">np</span><span class="p">):</span>
+            <span class="n">p_i</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">getPoint</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">v_i</span> <span class="o">=</span> <span class="n">path</span><span class="o">.</span><span class="n">getVector</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+            <span class="n">pt_pose</span> <span class="o">=</span> <span class="n">point2D_2_pose</span><span class="p">(</span><span class="n">p_i</span><span class="p">,</span> <span class="n">v_i</span><span class="p">)</span>
+
+            <span class="c1"># robot movement:</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="p">(</span>
+                <span class="n">transl</span><span class="p">(</span><span class="n">p_i</span><span class="o">.</span><span class="n">x</span><span class="p">,</span> <span class="n">p_i</span><span class="o">.</span><span class="n">y</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span> <span class="o">*</span> <span class="n">orient_frame2tool</span>
+            <span class="p">)</span>  <span class="c1"># keep the tool orientation constant</span>
+            <span class="c1"># target = pt_pose*orient_frame2tool #moving the tool along the path (axis 6 may reach its limits)</span>
+            <span class="n">_robot</span><span class="o">.</span><span class="n">MoveL</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+            <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># create a new pixel object with the calculated pixel pose</span>
+            <span class="n">board</span><span class="o">.</span><span class="n">AddGeometry</span><span class="p">(</span><span class="n">pix_ref</span><span class="p">,</span> <span class="n">pt_pose</span><span class="p">)</span>
+
+        <span class="n">target_app</span> <span class="o">=</span> <span class="n">target</span> <span class="o">*</span> <span class="n">transl</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">APPROACH</span><span class="p">)</span>
+        <span class="n">_robot</span><span class="o">.</span><span class="n">MoveJ</span><span class="p">(</span><span class="n">target_app</span><span class="p">)</span>
+        <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span>
+
+    <span class="n">_robot</span><span class="o">.</span><span class="n">MoveJ</span><span class="p">(</span><span class="n">home_joints</span><span class="p">)</span>
+    <span class="n">update_robot</span><span class="p">(</span><span class="n">_robot</span><span class="p">,</span> <span class="s2">&quot;A&quot;</span><span class="p">,</span> <span class="n">_robot</span><span class="o">.</span><span class="n">Joints</span><span class="p">()</span><span class="o">.</span><span class="n">list</span><span class="p">(),</span> <span class="kc">True</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="draw_image"><a class="viewcode-back" href="../../main/#main.draw_image">[docs]</a><span class="k">def</span> <span class="nf">draw_image</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;draw_image Draw an image using svg_draw_robot</span>
+
+<span class="sd">    .. seealso:: :func:`~main.svg_draw_robot`</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">svgfile</span> <span class="o">=</span> <span class="s2">&quot;drawings/autodesk.svg&quot;</span>
+    <span class="c1"># svgfile = path_stationfile + &#39;/RoboDK text.svg&#39;</span>
+
+    <span class="c1"># import the SVG file</span>
+    <span class="n">svgdata</span> <span class="o">=</span> <span class="n">svg_load</span><span class="p">(</span><span class="n">svgfile</span><span class="p">)</span>
+
+    <span class="n">IMAGE_SIZE</span> <span class="o">=</span> <span class="n">Point</span><span class="p">(</span><span class="mi">100</span><span class="p">,</span> <span class="mi">250</span><span class="p">)</span>  <span class="c1"># size of the image in MM</span>
+    <span class="n">MM_X_PIXEL</span> <span class="o">=</span> <span class="mi">10</span>  <span class="c1"># in mm the path will be cut is depending on the pixel size</span>
+    <span class="n">svgdata</span><span class="o">.</span><span class="n">calc_polygon_fit</span><span class="p">(</span><span class="n">IMAGE_SIZE</span><span class="p">,</span> <span class="n">MM_X_PIXEL</span><span class="p">)</span>
+    <span class="n">size_img</span> <span class="o">=</span> <span class="n">svgdata</span><span class="o">.</span><span class="n">size_poly</span><span class="p">()</span>  <span class="c1"># returns the size of the current polygon</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="n">size_img</span><span class="p">)</span>
+
+    <span class="c1"># get the robot, frame and tool objects</span>
+
+    <span class="n">framedraw</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;Frame draw&quot;</span><span class="p">)</span>
+    <span class="n">tooldraw</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;suction head&quot;</span><span class="p">)</span>
+
+    <span class="c1"># get the pixel reference to draw</span>
+    <span class="n">pixel_ref</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;pixel&quot;</span><span class="p">)</span>
+
+    <span class="c1"># delete previous image if any</span>
+    <span class="n">image</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;Board &amp; image&quot;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">image</span><span class="o">.</span><span class="n">Valid</span><span class="p">()</span> <span class="ow">and</span> <span class="n">image</span><span class="o">.</span><span class="n">Type</span><span class="p">()</span> <span class="o">==</span> <span class="n">ITEM_TYPE_OBJECT</span><span class="p">:</span>
+        <span class="n">image</span><span class="o">.</span><span class="n">Delete</span><span class="p">()</span>
+
+    <span class="c1"># make a drawing board base on the object reference &quot;Blackboard 250mm&quot;</span>
+    <span class="n">board_1m</span> <span class="o">=</span> <span class="n">RDK</span><span class="o">.</span><span class="n">Item</span><span class="p">(</span><span class="s2">&quot;Blackboard 250mm&quot;</span><span class="p">)</span>
+    <span class="n">board_1m</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">False</span><span class="p">)</span>
+    <span class="n">board_1m</span><span class="o">.</span><span class="n">Copy</span><span class="p">()</span>
+    <span class="n">board_draw</span> <span class="o">=</span> <span class="n">framedraw</span><span class="o">.</span><span class="n">Paste</span><span class="p">()</span>
+    <span class="n">board_draw</span><span class="o">.</span><span class="n">setName</span><span class="p">(</span><span class="s2">&quot;Board &amp; image&quot;</span><span class="p">)</span>
+    <span class="n">board_draw</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">board_draw</span><span class="o">.</span><span class="n">Scale</span><span class="p">(</span>
+        <span class="p">[</span><span class="n">size_img</span><span class="o">.</span><span class="n">x</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="n">size_img</span><span class="o">.</span><span class="n">y</span> <span class="o">/</span> <span class="mi">250</span><span class="p">,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="p">)</span>  <span class="c1"># adjust the board size to the image size (scale)</span>
+
+    <span class="c1"># quickly show the final result without checking the robot movements:</span>
+    <span class="c1"># svg_draw_quick(svgdata, board_draw, pixel_ref)</span>
+
+    <span class="c1"># draw the image with the robot:</span>
+    <span class="n">svg_draw_robot</span><span class="p">(</span><span class="n">svgdata</span><span class="p">,</span> <span class="n">board_draw</span><span class="p">,</span> <span class="n">pixel_ref</span><span class="p">,</span> <span class="n">framedraw</span><span class="p">,</span> <span class="n">tooldraw</span><span class="p">,</span> <span class="n">robot</span><span class="p">)</span></div>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># TODO Douva how tf am i supposed to document this shit</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">SERIAL</span><span class="p">,</span> <span class="n">connectPort</span> <span class="o">=</span> <span class="n">find_arduino</span><span class="p">(</span><span class="n">VERBOSE</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">SERIAL</span><span class="p">:</span>
+            <span class="n">connect_arduino</span><span class="p">(</span><span class="n">connectPort</span><span class="p">)</span>
+
+            <span class="k">while</span> <span class="n">ReadMessage</span><span class="p">()</span> <span class="o">!=</span> <span class="s2">&quot;booted&quot;</span><span class="p">:</span>
+                <span class="k">pass</span>
+
+            <span class="k">if</span> <span class="n">VERBOSE</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="n">textcolor</span><span class="p">(</span><span class="s2">&quot;Connected to Arduino</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">Fore</span><span class="o">.</span><span class="n">GREEN</span><span class="p">))</span>
+
+        <span class="n">keypad</span> <span class="o">=</span> <span class="n">Keyboard</span><span class="p">()</span>
+        <span class="n">keypad</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="n">server</span> <span class="o">=</span> <span class="n">ThreadedServer</span><span class="p">(</span><span class="mi">6942</span><span class="p">)</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">start</span><span class="p">()</span>
+
+        <span class="n">receivedData</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+
+        <span class="n">home_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+
+            <span class="k">while</span> <span class="kc">True</span><span class="p">:</span>
+                <span class="k">if</span> <span class="n">keypad</span><span class="o">.</span><span class="n">pressed</span><span class="p">:</span>
+                    <span class="n">receivedData</span> <span class="o">=</span> <span class="n">RecData</span><span class="o">.</span><span class="n">key2str</span><span class="p">(</span><span class="n">keypad</span><span class="o">.</span><span class="n">key</span><span class="p">)</span>
+                    <span class="k">break</span>
+
+                <span class="k">elif</span> <span class="n">server</span><span class="o">.</span><span class="n">recieved</span><span class="p">:</span>
+                    <span class="n">receivedData</span> <span class="o">=</span> <span class="n">server</span><span class="o">.</span><span class="n">msg</span>
+                    <span class="k">break</span>
+
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Received message: </span><span class="si">{</span><span class="n">receivedData</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">receivedData</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;E&quot;</span><span class="p">):</span>
+                <span class="n">EF_jog</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">receivedData</span><span class="p">,</span> <span class="n">INCREMENT</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="s2">&quot;M&quot;</span><span class="p">):</span>
+                <span class="n">axis_jog</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">receivedData</span><span class="p">,</span> <span class="n">INCREMENT</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">IncrementChangePositive</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">INCREMENT</span> <span class="o">+=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">INCREMENT</span> <span class="o">&gt;</span> <span class="mi">30</span><span class="p">:</span>
+                    <span class="n">INCREMENT</span> <span class="o">=</span> <span class="mi">30</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;increment: </span><span class="si">{</span><span class="n">INCREMENT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">IncrementChangeNegative</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">INCREMENT</span> <span class="o">-=</span> <span class="mi">1</span>
+                <span class="k">if</span> <span class="n">INCREMENT</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">INCREMENT</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;increment: </span><span class="si">{</span><span class="n">INCREMENT</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">SecondaryGripperPositive</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">gripper_state</span> <span class="o">+=</span> <span class="n">gripper_increment</span>
+                <span class="k">if</span> <span class="n">gripper_state</span> <span class="o">&gt;</span> <span class="mi">180</span><span class="p">:</span>
+                    <span class="n">INCREMENT</span> <span class="o">=</span> <span class="mi">180</span>
+                <span class="n">update_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">gripper_state</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">SecondaryGripperNegative</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">gripper_state</span> <span class="o">-=</span> <span class="n">gripper_increment</span>
+                <span class="k">if</span> <span class="n">gripper_state</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+                    <span class="n">INCREMENT</span> <span class="o">=</span> <span class="mi">0</span>
+                <span class="n">update_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="s2">&quot;G&quot;</span><span class="p">,</span> <span class="p">[</span><span class="n">gripper_state</span><span class="p">],</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">HomePosT</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">home_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="kc">True</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">HomePosA</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">home_robot</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">RequestDemos</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">server</span><span class="o">.</span><span class="n">send</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;!&quot;</span> <span class="o">+</span> <span class="s2">&quot;&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">])</span> <span class="o">+</span> <span class="s2">&quot;#&quot;</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">demos</span><span class="p">])</span>
+                <span class="p">)</span> <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">demos</span><span class="p">)</span> <span class="k">else</span> <span class="o">...</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">RecData</span><span class="o">.</span><span class="n">CreateNewDemo</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">create_demo</span><span class="p">(</span><span class="n">receivedData</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+                <span class="n">server</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;@&quot;</span> <span class="o">+</span> <span class="n">receivedData</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">RecData</span><span class="o">.</span><span class="n">DeleteDemo</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">delete_demo</span><span class="p">(</span><span class="n">receivedData</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+                <span class="n">server</span><span class="o">.</span><span class="n">send</span><span class="p">(</span><span class="s2">&quot;$&quot;</span> <span class="o">+</span> <span class="n">receivedData</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span><span class="o">.</span><span class="n">startswith</span><span class="p">(</span><span class="n">RecData</span><span class="o">.</span><span class="n">Replay</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+                <span class="n">play_demo</span><span class="p">(</span><span class="n">robot</span><span class="p">,</span> <span class="n">receivedData</span><span class="p">[</span><span class="mi">4</span><span class="p">:])</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">SavePosition</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">save_pos</span><span class="p">(</span><span class="n">robot</span><span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">Undo</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">undo_pos</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">Reset</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">reset_pos</span><span class="p">()</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">PickCardDemo</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">move_target_sequence</span><span class="p">(</span>
+                    <span class="n">robot</span><span class="p">,</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;1j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;2j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;3j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;s1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;2j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;4j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d3&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;2j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;3j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;s0&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;2j&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">PourDrinkDemo</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">move_target_sequence</span><span class="p">(</span>
+                    <span class="n">robot</span><span class="p">,</span>
+                    <span class="p">[</span>
+                        <span class="s2">&quot;0j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;1j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;2j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;3j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;g100&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;4j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;6j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;7l&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d6&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;6l&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;8j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;9l&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;g10&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;d1&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;10j&quot;</span><span class="p">,</span>
+                        <span class="s2">&quot;11j&quot;</span><span class="p">,</span>
+                    <span class="p">],</span>
+                <span class="p">)</span>
+
+            <span class="k">elif</span> <span class="n">receivedData</span> <span class="o">==</span> <span class="n">RecData</span><span class="o">.</span><span class="n">DrawImageDemo</span><span class="p">[</span><span class="mi">0</span><span class="p">]:</span>
+                <span class="n">draw_image</span><span class="p">()</span>
+
+            <span class="k">while</span> <span class="n">keypad</span><span class="o">.</span><span class="n">pressed</span> <span class="ow">or</span> <span class="n">server</span><span class="o">.</span><span class="n">recieved</span><span class="p">:</span>
+                <span class="k">continue</span>
+
+    <span class="k">except</span> <span class="ne">KeyboardInterrupt</span><span class="p">:</span>
+        <span class="k">pass</span>
+
+    <span class="k">except</span><span class="p">:</span>
+        <span class="n">traceback</span><span class="o">.</span><span class="n">print_exc</span><span class="p">()</span>
+
+    <span class="k">finally</span><span class="p">:</span>
+        <span class="n">server</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+        <span class="n">keypad</span><span class="o">.</span><span class="n">stop</span><span class="p">()</span>
+
+        <span class="n">RDK</span><span class="o">.</span><span class="n">CloseStation</span><span class="p">()</span>
+        <span class="n">RDK</span><span class="o">.</span><span class="n">CloseRoboDK</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">SERIAL</span><span class="p">:</span>
+            <span class="n">disconnect_arduino</span><span class="p">()</span>
+
+        <span class="n">sys</span><span class="o">.</span><span class="n">exit</span><span class="p">(</span><span class="n">textcolor</span><span class="p">(</span><span class="s2">&quot;</span><span class="se">\n</span><span class="s2">Exiting program...</span><span class="se">\n</span><span class="s2">&quot;</span><span class="p">,</span> <span class="n">Fore</span><span class="o">.</span><span class="n">RED</span><span class="p">))</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2021, Big Hero Robotics.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

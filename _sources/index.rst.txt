@@ -1,4 +1,4 @@
-Roboticarm's documentation!
+Roboticarm's documentation
 ======================================
 
 .. toctree::
